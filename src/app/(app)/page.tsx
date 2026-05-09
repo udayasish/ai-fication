@@ -1,18 +1,22 @@
-import SpendForm from "@/components/audit/SpendForm";
+import HeroSection from "@/components/landing/HeroSection";
+import HowItWorks from "@/components/landing/HowItWorks";
+import ToolsWeCover from "@/components/landing/ToolsWeCover";
+import CTASection from "@/components/landing/CTASection";
 
 export default function Home() {
   return (
     <div>
       {/* ── Hero ── */}
-      <section>
-        <h1>Find out how much your team is overpaying for AI tools</h1>
-        <p>Free 2-minute audit. Get a personalised savings report instantly.</p>
-      </section>
+      <HeroSection />
 
-      {/* ── Spend Form ── */}
-      <section>
-        <SpendForm />
-      </section>
+      {/* ── How it works ── */}
+      <HowItWorks />
+
+      {/* ── Tools we cover ── */}
+      <ToolsWeCover />
+
+      {/* ── CTA ── */}
+      <CTASection />
     </div>
   );
 }

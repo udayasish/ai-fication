@@ -1,19 +1,21 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Navbar from "@/components/layout/Navbar";
 
 export default function Header() {
   return (
-    <header>
+    <header className="sticky top-0 z-50 w-full bg-background1 border-b border-border flex items-center h-16 px-4 sm:px-6 lg:px-8">
       {/* ── Logo ── */}
-      <Link href="/">AI Spend Audit</Link>
+      <Link
+        href="/"
+        className="text-xl font-bold tracking-widest text-primary uppercase"
+      >
+        AI-FICATION
+      </Link>
 
-      {/* ── Nav ── */}
-      <nav>
-        <a href="#how-it-works">How it works</a>
-        <Button asChild>
-          <a href="#audit">Start Audit</a>
-        </Button>
-      </nav>
+      {/* ── Nav — absolutely centered ── */}
+      <div className="absolute left-1/2 -translate-x-1/2">
+        <Navbar />
+      </div>
     </header>
   );
 }

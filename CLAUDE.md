@@ -112,6 +112,14 @@ components/layout/
 
 Before writing any constant, component, or utility inline — ask: "Could this be needed elsewhere?" If yes, put it in the right shared location from the start.
 
+### Simplicity First
+
+Always prefer the simplest solution that works. Before reaching for an abstraction, utility, or pattern — ask: "Can this be done with plain, readable code instead?" If yes, use that.
+
+- Prefer plain Tailwind classes over utility wrappers like `cn(buttonVariants({...}))`
+- Prefer `<Link>` with a className over wrapping it in a Button component
+- Only introduce complexity when simplicity genuinely cannot solve the problem
+
 ---
 
 ## API Design Rules
