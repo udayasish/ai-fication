@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx shadcn@latest init --defaults)",
+      "Bash(npx shadcn@latest add input select card label badge --overwrite)"
+    ]
+  }
+}
