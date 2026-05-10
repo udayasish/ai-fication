@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CTA_SECTION } from "@/lib/constants/landingPage";
 
 export default function CTASection() {
   return (
@@ -6,25 +7,25 @@ export default function CTASection() {
       <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-6">
         {/* ── Badge ── */}
         <span className="inline-block border border-primary text-primary text-sm font-medium px-4 py-1 rounded-full">
-          ✦ Get Started Today
+          {CTA_SECTION.badge}
         </span>
 
         {/* ── Headline ── */}
         <h2 className="text-4xl font-bold text-foreground">
-          Ready to stop overpaying for AI?
+          {CTA_SECTION.headline}
         </h2>
 
         {/* ── Subtext ── */}
         <p className="text-lg text-muted-foreground">
-          Join teams already saving thousands. Free audit, no signup required.
+          {CTA_SECTION.subtext}
         </p>
 
         {/* ── CTA Button ── */}
         <Link
-          href="/audit"
+          href={CTA_SECTION.ctaHref}
           className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-md hover:opacity-90 transition-opacity"
         >
-          Start Free Audit →
+          {CTA_SECTION.cta}
         </Link>
       </div>
     </section>
