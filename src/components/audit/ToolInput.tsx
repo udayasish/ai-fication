@@ -25,7 +25,7 @@ export default function ToolInput({ tool, entry, onChange }: ToolInputProps) {
       {/* ── Tool name ── */}
       <span className={`${TOOL_ROW_COLS.name} text-sm font-semibold text-foreground`}>{tool.name}</span>
 
-      {/* ── Plan dropdown — hidden for API tools ── */}
+      {/* ── Plan dropdown — non-API tools only ── */}
       {!isApiTool(tool) && (
         <select
           value={entry.planId}
@@ -37,6 +37,23 @@ export default function ToolInput({ tool, entry, onChange }: ToolInputProps) {
           {tool.plans.map((plan) => (
             <option key={plan.id} value={plan.id}>
               {plan.name} — ${plan.monthlyPricePerSeat}/seat
+            </option>
+          ))}
+        </select>
+      )}
+
+      {/* ── Model dropdown — API tools only ── */}
+      {isApiTool(tool) && (
+        <select
+          value={entry.modelId ?? ""}
+          disabled={!entry.included}
+          onChange={(e) => onChange({ ...entry, modelId: e.target.value })}
+          className={`${TOOL_ROW_COLS.plan} w-full h-10 text-sm bg-background border border-border rounded-md px-3 text-foreground disabled:cursor-not-allowed`}
+        >
+          <option value="">Select model</option>
+          {tool.apiModels?.map((model) => (
+            <option key={model.id} value={model.id}>
+              {model.name}
             </option>
           ))}
         </select>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { TOOLS } from "@/lib/constants/tools";
 import { USE_CASE_OPTIONS, TOOL_ROW_COLS } from "@/lib/constants/auditPage";
 import type { AuditFormData, ToolEntry } from "@/types/audit";
@@ -16,8 +17,13 @@ export default function SpendForm() {
       monthlySpend: 0,
       seats: 0,
       included: false,
+      modelId: "",
     })),
   });
+
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Updates one tool entry in the tools array by matching toolId
   function handleToolChange(updated: ToolEntry) {
@@ -27,10 +33,34 @@ export default function SpendForm() {
     }));
   }
 
-  // Placeholder — API call comes in Step 6
-  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+  // Sends form data to POST /api/audit, then redirects to the results page.
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsLoading(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch("/api/audit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSubmitError(
+          data.issues?.formErrors?.[0] ?? "Please check your inputs and try again."
+        );
+        return;
+      }
+
+      router.push(`/audit/${data.slug}`);
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -102,7 +132,7 @@ export default function SpendForm() {
           <span
             className={`${TOOL_ROW_COLS.plan} text-xs font-semibold text-muted-foreground uppercase tracking-wider`}
           >
-            Plan
+            Plan / Model
           </span>
           <span
             className={`${TOOL_ROW_COLS.spend} text-xs font-semibold text-muted-foreground uppercase tracking-wider`}
@@ -132,11 +162,15 @@ export default function SpendForm() {
       </div>
 
       {/* ── Submit ── */}
+      {submitError && (
+        <p className="text-sm text-red-500 text-center">{submitError}</p>
+      )}
       <button
         type="submit"
-        className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-md hover:opacity-90 transition-opacity w-full"
+        disabled={isLoading}
+        className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-md hover:opacity-90 transition-opacity w-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Run My Audit →
+        {isLoading ? "Running audit…" : "Run My Audit →"}
       </button>
     </form>
   );

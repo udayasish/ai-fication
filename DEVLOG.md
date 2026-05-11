@@ -36,3 +36,46 @@ I am not stuck on anything particular today. But, I didnot use zod for validatio
   I am two days behind. So I will try to work as much as I can tomorrow to make it even.
 
 ---
+
+## Day 2 — 2026-05-10
+
+**Hours worked:** 6
+
+**What I did:**
+
+Built the complete landing page and the audit form UI from scratch.
+
+**Landing Page:**
+
+- Designed and implemented a full dark teal color theme (`#0a1e1e` background, teal primary, emerald secondary, gold accent) using CSS variables in `globals.css` with Tailwind v4's `@theme inline` system — no `tailwind.config.ts` needed.
+- Built 4 landing page sections as separate components: `HeroSection`, `HowItWorks`, `ToolsWeCover`, `CTASection` — each in `src/components/landing/`.
+- Centralized all landing page texts (badge text, headings, subtext, CTA labels, steps, footer) into `src/lib/constants/landingPage.ts` — no hardcoded strings in any component.
+- Styled `Header` with sticky positioning, logo on left, centered navbar with active state using `usePathname()`.
+- Styled `Footer` to match header background with copyright and Credex attribution.
+- Used alternating section backgrounds (`bg-background` / `bg-background2`) for visual depth separation between sections.
+
+**Audit Page:**
+
+- Built Zod validation schema in `src/lib/validators/audit.ts`.
+- Built `ToolInput` component — one row per tool with checkbox, plan dropdown, monthly spend, and seat count. API tools (Anthropic API, OpenAI API, Gemini API) hide plan and seats automatically.
+- Built full `SpendForm`, `handleToolChange`, column headers, and color-separated meta fields vs tool rows.
+- Centralized column widths in `TOOL_ROW_COLS` constant so header and input columns stay in sync automatically.
+- Styled audit page layout with a `bg-surface` card wrapping the form.
+
+**What I learned:**
+
+- Tailwind v4 uses `@theme inline` in CSS instead of `tailwind.config.ts` — CSS variables are the single source of truth for design tokens.
+
+**Blockers / what I'm stuck on:**
+
+- The API route (`/api/audit`) is not yet built — form submits but only logs to console.
+- Results page (`/audit/[slug]`) not yet started.
+
+**Plan for tomorrow:**
+
+- Build `/api/audit` route — validate with Zod, run audit engine logic (compare spend vs alternatives), save to DB.
+- Integrate Gemini API to generate a personalised savings summary.
+- Build the results page (`/audit/[slug]`) to display savings recommendations.
+- Wire form submission in `SpendForm` to POST to the API and redirect to results.
+
+---

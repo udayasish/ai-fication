@@ -4,7 +4,10 @@
       "WebSearch",
       "Bash(npx shadcn@latest init --defaults)",
       "Bash(npx shadcn@latest add input select card label badge --overwrite)",
-      "Bash(node -e \"require\\('zod'\\)\")"
+      "Bash(node -e \"require\\('zod'\\)\")",
+      "Bash(node -e \"require\\('@google/generative-ai'\\)\")",
+      "Bash(npm install:*)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

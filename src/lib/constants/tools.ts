@@ -266,9 +266,12 @@ export const TOOLS: Tool[] = [
     ],
     plans: [],
     apiModels: [
-      { id: "claude_3_haiku", name: "Claude 3 Haiku", inputPricePer1MTokens: 0.25, outputPricePer1MTokens: 1.25 },
-      { id: "claude_3_5_haiku", name: "Claude 3.5 Haiku", inputPricePer1MTokens: 0.80, outputPricePer1MTokens: 4.00 },
-      { id: "claude_3_5_sonnet", name: "Claude 3.5 Sonnet", inputPricePer1MTokens: 3.00, outputPricePer1MTokens: 15.00 },
+      { id: "claude_3_haiku",    name: "Claude 3 Haiku",    inputPricePer1MTokens: 0.25,  outputPricePer1MTokens: 1.25  },
+      { id: "claude_3_5_haiku",  name: "Claude 3.5 Haiku",  inputPricePer1MTokens: 0.80,  outputPricePer1MTokens: 4.00  },
+      { id: "claude_3_5_sonnet", name: "Claude 3.5 Sonnet", inputPricePer1MTokens: 3.00,  outputPricePer1MTokens: 15.00 },
+      { id: "claude_sonnet_4_5", name: "Claude Sonnet 4.5", inputPricePer1MTokens: 3.00,  outputPricePer1MTokens: 15.00 },
+      { id: "claude_sonnet_4_6", name: "Claude Sonnet 4.6", inputPricePer1MTokens: 3.00,  outputPricePer1MTokens: 15.00 },
+      { id: "claude_opus_4",     name: "Claude Opus 4",     inputPricePer1MTokens: 15.00, outputPricePer1MTokens: 75.00 },
     ],
   },
 
@@ -278,13 +281,16 @@ export const TOOLS: Tool[] = [
     vendor: "OpenAI",
     category: "api",
     alternatives: [
-      { toolId: "anthropic_api", reason: "Claude 3.5 Sonnet outperforms GPT-4o on many benchmarks at comparable pricing" },
-      { toolId: "gemini_api", reason: "Gemini 2.5 Pro is $1.25/$10.00 per 1M tokens vs GPT-4o at $2.50/$10.00" },
+      { toolId: "anthropic_api", reason: "Claude Sonnet 4.5 matches GPT-4o quality at $3.00/$15.00 per 1M tokens" },
+      { toolId: "gemini_api",    reason: "Gemini 2.5 Flash is $0.15/$0.60 per 1M tokens — cheaper than GPT-4o mini for most workloads" },
     ],
     plans: [],
     apiModels: [
-      { id: "gpt_4o_mini", name: "GPT-4o mini", inputPricePer1MTokens: 0.15, outputPricePer1MTokens: 0.60 },
-      { id: "gpt_4o", name: "GPT-4o", inputPricePer1MTokens: 2.50, outputPricePer1MTokens: 10.00 },
+      { id: "gpt_4o_mini",  name: "GPT-4o mini",  inputPricePer1MTokens: 0.15, outputPricePer1MTokens: 0.60  },
+      { id: "gpt_4_1_mini", name: "GPT-4.1 mini", inputPricePer1MTokens: 0.40, outputPricePer1MTokens: 1.60  },
+      { id: "gpt_4o",       name: "GPT-4o",        inputPricePer1MTokens: 2.50, outputPricePer1MTokens: 10.00 },
+      { id: "gpt_4_1",      name: "GPT-4.1",       inputPricePer1MTokens: 2.00, outputPricePer1MTokens: 8.00  },
+      { id: "o4_mini",      name: "o4-mini",        inputPricePer1MTokens: 1.10, outputPricePer1MTokens: 4.40  },
     ],
   },
 
@@ -294,14 +300,15 @@ export const TOOLS: Tool[] = [
     vendor: "Google",
     category: "api",
     alternatives: [
-      { toolId: "anthropic_api", reason: "Claude 3 Haiku is $0.25/$1.25 per 1M tokens — cheaper than Gemini 1.5 Pro for high-volume use" },
-      { toolId: "openai_api", reason: "GPT-4o mini is $0.15/$0.60 per 1M tokens — the cheapest option for lightweight tasks" },
+      { toolId: "anthropic_api", reason: "Claude 3 Haiku is $0.25/$1.25 per 1M tokens — cheaper than Gemini 2.5 Pro for high-volume use" },
+      { toolId: "openai_api",    reason: "GPT-4o mini is $0.15/$0.60 per 1M tokens — comparable to Gemini 2.5 Flash at similar quality" },
     ],
     plans: [],
     apiModels: [
-      { id: "gemini_1_5_flash", name: "Gemini 1.5 Flash", inputPricePer1MTokens: 0.075, outputPricePer1MTokens: 0.30 },
-      { id: "gemini_1_5_pro", name: "Gemini 1.5 Pro", inputPricePer1MTokens: 3.50, outputPricePer1MTokens: 10.50 },
-      { id: "gemini_2_5_pro", name: "Gemini 2.5 Pro", inputPricePer1MTokens: 1.25, outputPricePer1MTokens: 10.00 },
+      { id: "gemini_1_5_flash", name: "Gemini 1.5 Flash", inputPricePer1MTokens: 0.075, outputPricePer1MTokens: 0.30  },
+      { id: "gemini_2_0_flash", name: "Gemini 2.0 Flash", inputPricePer1MTokens: 0.10,  outputPricePer1MTokens: 0.40  },
+      { id: "gemini_2_5_flash", name: "Gemini 2.5 Flash", inputPricePer1MTokens: 0.15,  outputPricePer1MTokens: 0.60  },
+      { id: "gemini_2_5_pro",   name: "Gemini 2.5 Pro",   inputPricePer1MTokens: 1.25,  outputPricePer1MTokens: 10.00 },
     ],
   },
 ];
