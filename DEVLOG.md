@@ -79,3 +79,51 @@ Built the complete landing page and the audit form UI from scratch.
 - Wire form submission in `SpendForm` to POST to the API and redirect to results.
 
 ---
+
+## Day 3 — 2026-05-11
+
+**Hours worked:** 7
+
+**What I did:**
+
+Completed the full audit engine, wired the form to the backend, and got the entire flow working end-to-end.
+
+**Audit Engine:**
+
+- Realized that pure cost comparison was flawed — it would always recommend the cheapest tool regardless of quality. A tool like Claude costs more than ChatGPT, but it scores significantly higher on coding benchmarks. Always recommending the cheapest would produce misleading results.
+- Designed a benchmark-based efficiency matrix: `efficiencyScore = benchmarkScore / monthlyCost`. This ranks tools by how much performance you get per dollar, not just by price.
+- Added a 15-point quality threshold — if a recommended tool's benchmark drops more than 15 points vs the current tool, it gets discarded, even if it's more efficient on paper. This prevents recommending a significantly worse tool just because it's cheap.
+- Sourced real benchmark scores for 5 use cases (coding, writing, research, data analysis, customer support) from SWE-bench Verified, MMLU-Pro, GPQA Diamond, and Chatbot Arena ELO. Documented all sources with URLs in `src/lib/constants/benchmarks.ts`.
+- Rewrote `audit.service.ts` with 4 helper functions for separation of concerns: seat-based candidates, API token projection, best option picker, and pure cost fallback.
+
+**Model Selector:**
+
+- Discovered a critical accuracy bug: the token projection for API tools (Anthropic, OpenAI, Gemini) was always using the cheapest model as the baseline. If someone actually uses Claude Opus, the estimate would be 60x off.
+- Added model dropdown for API tool rows in the form so users specify which model they actually use. The audit engine then uses that model's exact pricing for token volume estimation.
+- Fixed a Zod validation bug in the process: `planId` refine was failing for included API tools (they have no plan). Moved the check to `superRefine` where tool category is accessible.
+
+**API Route + Form Wiring:**
+
+- Built `POST /api/audit`: Zod validation → `runAudit()` → Gemini summary (non-fatal if it fails) → DB insert with nanoid slug → returns `{ slug }`.
+- The Gemini summary is the only place an LLM is used in the entire project. All audit math is deterministic hardcoded logic. Documented the full prompt in `PROMPTS.md` as required by the assignment.
+- Wired `SpendForm` submit to call the API, added loading state and error handling, redirects to `/audit/[slug]` on success.
+- Built a functional results page at `/audit/[slug]` — displays total savings, AI summary, and a card per tool with current vs projected spend, recommendation, and benchmark source.
+
+**What I learned:**
+
+- When building a recommendation engine, cheapest is not always best. You need a quality dimension alongside cost — otherwise you end up recommending tools that nobody would actually want to use.
+- `&&` and `??` interact in a subtle way in TypeScript: `entry.modelId && find()` returns `"" | ApiModel` when modelId is an empty string, not `ApiModel | undefined`. A ternary is the correct fix.
+- The assignment rewards knowing when _not_ to use AI — the examiner specifically checks this. Hardcoded deterministic logic for calculations, LLM only for the summary.
+
+**Blockers / what I'm stuck on:**
+
+- The results page is functional but unstyled — it shows all data correctly but looks plain.
+- No field-level validation errors shown in the form yet (only top-level errors from Zod surface to the user).
+
+**Plan for tomorrow:**
+
+- Style the results page properly — savings hero section, benchmark comparison visualization, clear recommendation cards.
+- Test the full flow end-to-end with real form inputs and verify DB records.
+- Start on remaining required assignment files (README, ARCHITECTURE, REFLECTION, etc.).
+
+---
