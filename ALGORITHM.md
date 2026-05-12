@@ -63,24 +63,40 @@ This prevents recommending a tool that is significantly weaker just because it i
 
 ```
 Input:  current tool, user's use case, all alternative tools
-Output: best recommendation
+Output: best recommendation + full list of alternatives considered
 
 1. Look up the current tool's benchmark score for the user's use case.
-   If no benchmark exists for this use case → skip tool comparison, return current tool.
+   If no benchmark exists → fall back to pure cost comparison (no benchmark fields).
 
-2. For each alternative tool:
+2. Calculate current tool's efficiency score:
+   currentEfficiencyScore = currentBenchmark / currentSpend
+
+3. For each alternative tool:
    a. Look up its benchmark score for the user's use case.
-      If no benchmark exists → skip this alternative.
+      If no benchmark exists → skip this alternative entirely.
    b. Calculate efficiencyScore = benchmarkScore / monthlyCost
+   c. Calculate benchmarkDrop = currentBenchmark - altBenchmark
 
-3. Sort all alternatives by efficiencyScore descending (highest first).
+4. Sort all alternatives by efficiencyScore descending (highest first).
 
-4. Walk through the sorted alternatives one by one:
-   a. Calculate benchmarkDrop = currentBenchmark - altBenchmark
-   b. If benchmarkDrop > 15 → DISCARD this alternative, move to the next one
-   c. If benchmarkDrop ≤ 15 → RECOMMEND this alternative, stop
+5. Apply 3 gates to each alternative in order:
 
-5. If no alternative passed step 4 → RECOMMEND current tool ("Already best value")
+   Gate 1 — Efficiency check:
+     If altEfficiencyScore ≤ currentEfficiencyScore → DISCARD
+     Reason: not a better value than what the user already has
+
+   Gate 2 — Same-cost check:
+     If altCost == currentCost AND altBenchmark ≤ currentBenchmark → DISCARD
+     Reason: same price but worse or equal quality — no reason to switch
+
+   Gate 3 — Quality threshold:
+     If benchmarkDrop > 15 → DISCARD
+     Reason: quality sacrifice is too large, even if efficiency is better
+
+   If all 3 gates pass → ADD to recommendation list
+
+6. If recommendation list is empty → RECOMMEND current tool ("Already best value")
+   Otherwise → #1 in list is primary recommendation, #2–#4 are "Other options"
 ```
 
 ---

@@ -69,8 +69,11 @@ export async function POST(req: NextRequest) {
   }
 
   // 5. Persist to DB
-  const id = nanoid();
-  const slug = nanoid(8);
+  const id    = nanoid();
+  const now   = new Date();
+  const month = now.toLocaleString("en-US", { month: "short" }).toLowerCase();
+  const day   = now.getDate();
+  const slug  = `ai-audit-${month}-${day}-${nanoid(6)}`;
 
   await db.insert(audits).values({
     id,

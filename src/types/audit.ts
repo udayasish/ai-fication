@@ -15,10 +15,32 @@ export interface AuditFormData {
   tools: ToolEntry[];
 }
 
+// One step in the algorithm's decision process — shown in the transparency section
+export interface ComparisonStep {
+  toolName: string;
+  planName: string;
+  projectedSpend: number;
+  benchmarkScore: number;
+  verdict: "selected" | "discarded_efficiency" | "discarded_quality" | "discarded_same_cost";
+  reason: string;
+}
+
+// One runner-up recommendation shown below the primary pick
+export interface AlternativeOption {
+  toolName: string;
+  planName: string;
+  projectedSpend: number;
+  savings: number;
+  benchmarkScore: number;
+  benchmarkDrop: number;
+  efficiencyScore: number;
+}
+
 // One tool's savings analysis — output of the audit engine
 export interface AuditResult {
   toolId: string;
   toolName: string;
+  currentPlanName: string;
   currentSpend: number;
   recommendedToolId: string;
   recommendedToolName: string;
@@ -39,6 +61,8 @@ export interface AuditResult {
   recommendedEfficiencyScore?: number;  // recommendedBenchmark / projectedSpend
   benchmarkSource?: string;             // e.g. "SWE-bench Verified"
   benchmarkSourceUrl?: string;          // verification URL shown on results page
+  alternatives?: AlternativeOption[];   // ranked #2, #3, #4 by efficiency score
+  comparisonSteps?: ComparisonStep[];   // every candidate considered + verdict
 }
 
 // Full output of the audit engine

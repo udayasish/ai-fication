@@ -80,6 +80,11 @@ export const TESTIMONIALS = [...];
 
 - Third-party SDK configs used in more than one file go in `lib/<service>.ts`.
 - Never instantiate a third-party client more than once — always import from the singleton.
+- Every third-party service that requires a client or API key **must** have a singleton in `lib/`. Current singletons:
+  - `lib/db.ts` — Drizzle (Postgres)
+  - `lib/gemini.ts` — Google Generative AI
+  - `lib/resend.ts` — Resend (email)
+- When adding a new third-party service, create its singleton in `lib/<service>.ts` first. Never call `new ServiceClient(...)` inside a route handler, service file, or component — always import the singleton.
 
 ### Components
 

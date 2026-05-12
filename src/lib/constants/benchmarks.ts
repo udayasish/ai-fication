@@ -105,6 +105,8 @@ export const TOOL_BENCHMARKS: Record<string, Partial<Record<BenchmarkUseCase, nu
   },
 
   chatgpt: {
+    // [est.] GPT-4.1 SWE-bench Verified ~54%; chat-product penalty applied (no IDE integration)
+    coding: 43,
     // MMLU-Pro (artificialanalysis.ai)
     research: 87,
     // Arena ELO ~1314 → (1314 − 1100) / 5 = 43 — GPT-4o is no longer frontier
@@ -114,6 +116,8 @@ export const TOOL_BENCHMARKS: Record<string, Partial<Record<BenchmarkUseCase, nu
   },
 
   gemini: {
+    // [est.] Gemini 2.5 Pro SWE-bench Verified ~63%; chat-product penalty applied
+    coding: 50,
     // MMLU-Pro (artificialanalysis.ai)
     research: 90,
     // GPQA Diamond (leanware.co/insights, Gemini 2.5 Pro)

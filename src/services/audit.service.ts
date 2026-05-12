@@ -2,7 +2,7 @@ import { TOOLS_MAP } from "@/lib/constants/tools";
 import { TOOL_BENCHMARKS, BENCHMARK_SOURCES, BENCHMARK_QUALITY_THRESHOLD } from "@/lib/constants/benchmarks";
 import type { BenchmarkUseCase } from "@/lib/constants/benchmarks";
 import type { AuditFormValues } from "@/lib/validators/audit";
-import type { AuditOutput, AuditResult } from "@/types/audit";
+import type { AuditOutput, AuditResult, ComparisonStep } from "@/types/audit";
 import type { Tool } from "@/types/tools";
 import type { ToolEntry } from "@/types/audit";
 
@@ -49,7 +49,7 @@ function collectSeatOptions(
       options.push({
         toolId: tool.id,
         toolName: tool.name,
-        planName: cheaperPlan.name,
+        planName: `${cheaperPlan.name} · $${cheaperPlan.monthlyPricePerSeat}/seat`,
         projectedSpend: cost,
         benchmark: currentBenchmark,  // same tool = same benchmark score
         benchmarkDrop: 0,
@@ -77,7 +77,7 @@ function collectSeatOptions(
     options.push({
       toolId: altTool.id,
       toolName: altTool.name,
-      planName: cheapestPlan.name,
+      planName: `${cheapestPlan.name} · $${cheapestPlan.monthlyPricePerSeat}/seat`,
       projectedSpend: cost,
       benchmark: altBenchmark,
       benchmarkDrop: currentBenchmark - altBenchmark,
@@ -138,7 +138,7 @@ function projectApiAlternatives(
     options.push({
       toolId: altTool.id,
       toolName: altTool.name,
-      planName: "Usage-based",
+      planName: `Usage-based · $${altModel.inputPricePer1MTokens}/$${altModel.outputPricePer1MTokens} per 1M tokens`,
       projectedSpend,
       benchmark: altBenchmark,
       benchmarkDrop: currentBenchmark - altBenchmark,
@@ -152,12 +152,28 @@ function projectApiAlternatives(
 
 // ── Helper 3 — pickBestOption() ───────────────────────────────────────────────
 
-// Sorts candidates by efficiencyScore descending, then walks the list and returns
-// the first candidate whose benchmarkDrop is within the quality threshold.
-// Returns null if every candidate is discarded — caller falls back to current tool.
-function pickBestOption(candidates: CandidateOption[]): CandidateOption | null {
-  const sorted = [...candidates].sort((a, b) => b.efficiencyScore - a.efficiencyScore);
-  return sorted.find((c) => c.benchmarkDrop <= BENCHMARK_QUALITY_THRESHOLD) ?? null;
+// Sorts all candidates by efficiency descending, then applies 3 gates in order:
+//   1. Candidate efficiency must beat the current tool's efficiency
+//   2. Same cost as current → benchmark must be strictly higher
+//   3. Benchmark drop must be within the quality threshold
+// Returns the full passing list — [0] is primary, rest are alternatives.
+function pickTopOptions(
+  candidates: CandidateOption[],
+  currentSpend: number,
+  currentBenchmark: number,
+  currentEfficiencyScore: number
+): CandidateOption[] {
+  return [...candidates]
+    .sort((a, b) => b.efficiencyScore - a.efficiencyScore)
+    .filter((c) => {
+      // 1. Must offer better efficiency than the current tool — otherwise no reason to switch
+      if (c.efficiencyScore <= currentEfficiencyScore) return false;
+      // 2. Same cost as current → only keep if benchmark is strictly higher
+      if (c.projectedSpend === currentSpend && c.benchmark <= currentBenchmark) return false;
+      // 3. Must pass the quality threshold
+      if (c.benchmarkDrop > BENCHMARK_QUALITY_THRESHOLD) return false;
+      return true;
+    });
 }
 
 // ── Helper 4 — pureCostFallback() ────────────────────────────────────────────
@@ -243,6 +259,20 @@ export function runAudit(formData: AuditFormValues): AuditOutput {
     const tool = TOOLS_MAP[entry.toolId];
     const currentSpend = entry.monthlySpend;
 
+    // Resolve the current plan/model name + price for display on the results page
+    const currentPlanName =
+      tool.category === "api"
+        ? (() => {
+            const model = tool.apiModels?.find((m) => m.id === entry.modelId);
+            if (!model) return "Usage-based";
+            return `${model.name} · $${model.inputPricePer1MTokens}/$${model.outputPricePer1MTokens} per 1M tokens`;
+          })()
+        : (() => {
+            const plan = tool.plans.find((p) => p.id === entry.planId);
+            if (!plan) return "Current plan";
+            return `${plan.name} · $${plan.monthlyPricePerSeat}/seat`;
+          })();
+
     // 1. Look up benchmark for the current tool + use case
     const currentBenchmark = TOOL_BENCHMARKS[tool.id]?.[useCase];
 
@@ -260,14 +290,60 @@ export function runAudit(formData: AuditFormValues): AuditOutput {
         ? projectApiAlternatives(tool, entry, currentBenchmark, useCase)
         : collectSeatOptions(tool, entry, currentBenchmark, useCase, currentSpend);
 
-    // 4. Walk sorted candidates — pick first that passes the quality threshold
-    const best = pickBestOption(candidates);
+    // 4. Walk sorted candidates — apply all 3 gates
+    const topOptions = pickTopOptions(candidates, currentSpend, currentBenchmark, currentEfficiencyScore);
+    const best = topOptions[0] ?? null;
+
+    // Build transparency steps — one entry per candidate showing why it passed or was rejected
+    const comparisonSteps: ComparisonStep[] = [...candidates]
+      .sort((a, b) => b.efficiencyScore - a.efficiencyScore)
+      .map((c) => {
+        if (c.efficiencyScore <= currentEfficiencyScore) {
+          return {
+            toolName: c.toolName,
+            planName: c.planName,
+            projectedSpend: c.projectedSpend,
+            benchmarkScore: c.benchmark,
+            verdict: "discarded_efficiency" as const,
+            reason: `Lower efficiency score (${c.efficiencyScore.toFixed(2)} vs your ${currentEfficiencyScore.toFixed(2)}) — not a better value`,
+          };
+        }
+        if (c.projectedSpend === currentSpend && c.benchmark <= currentBenchmark) {
+          return {
+            toolName: c.toolName,
+            planName: c.planName,
+            projectedSpend: c.projectedSpend,
+            benchmarkScore: c.benchmark,
+            verdict: "discarded_same_cost" as const,
+            reason: `Same price but lower benchmark (${c.benchmark} vs your ${currentBenchmark})`,
+          };
+        }
+        if (c.benchmarkDrop > BENCHMARK_QUALITY_THRESHOLD) {
+          return {
+            toolName: c.toolName,
+            planName: c.planName,
+            projectedSpend: c.projectedSpend,
+            benchmarkScore: c.benchmark,
+            verdict: "discarded_quality" as const,
+            reason: `Quality drop too large: ${c.benchmarkDrop} pts (threshold is ${BENCHMARK_QUALITY_THRESHOLD})`,
+          };
+        }
+        return {
+          toolName: c.toolName,
+          planName: c.planName,
+          projectedSpend: c.projectedSpend,
+          benchmarkScore: c.benchmark,
+          verdict: "selected" as const,
+          reason: c.reason,
+        };
+      });
 
     // 5. No candidate passed → current tool is already best value
     if (!best) {
       return {
         toolId: tool.id,
         toolName: tool.name,
+        currentPlanName,
         currentSpend,
         recommendedToolId: tool.id,
         recommendedToolName: tool.name,
@@ -283,6 +359,8 @@ export function runAudit(formData: AuditFormValues): AuditOutput {
         recommendedEfficiencyScore: currentEfficiencyScore,
         benchmarkSource: benchmarkMeta.name,
         benchmarkSourceUrl: benchmarkMeta.url,
+        alternatives: [],
+        comparisonSteps,
       };
     }
 
@@ -290,6 +368,7 @@ export function runAudit(formData: AuditFormValues): AuditOutput {
     return {
       toolId: tool.id,
       toolName: tool.name,
+      currentPlanName,
       currentSpend,
       recommendedToolId: best.toolId,
       recommendedToolName: best.toolName,
@@ -305,6 +384,16 @@ export function runAudit(formData: AuditFormValues): AuditOutput {
       recommendedEfficiencyScore: best.efficiencyScore,
       benchmarkSource: benchmarkMeta.name,
       benchmarkSourceUrl: benchmarkMeta.url,
+      comparisonSteps,
+      alternatives: topOptions.slice(1, 4).map((opt) => ({
+        toolName: opt.toolName,
+        planName: opt.planName,
+        projectedSpend: opt.projectedSpend,
+        savings: currentSpend - opt.projectedSpend,
+        benchmarkScore: opt.benchmark,
+        benchmarkDrop: opt.benchmarkDrop,
+        efficiencyScore: opt.efficiencyScore,
+      })),
     };
   });
 

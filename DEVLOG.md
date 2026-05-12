@@ -127,3 +127,76 @@ Completed the full audit engine, wired the form to the backend, and got the enti
 - Start on remaining required assignment files (README, ARCHITECTURE, REFLECTION, etc.).
 
 ---
+
+## Day 4 — 2026-05-12
+
+**Hours worked:** 6
+
+**What I did:**
+
+Improved the audit result page significantly, wired form state persistence, cleaned up constants, and built the complete email capture backend.
+
+**Audit Result Page:**
+
+- Built the full `/audit/[slug]` results page from scratch as a Next.js Server Component — fetches the audit from DB by slug, renders all data server-side.
+- Each tool gets its own card showing: tool name + savings badge, 1-sentence reason, a side-by-side Current vs Recommended grid (tool name, plan/model + price, monthly spend, benchmark score, efficiency score), and benchmark source with a quality drop indicator.
+- Added "Other options" section — shows the #2, #3, #4 ranked alternatives below the primary recommendation, each with spend, score, efficiency, and benchmark drop.
+- Added "How we decided" transparency section — every candidate considered by the algorithm gets a ✓ (selected) or ✗ (discarded) marker with the exact reason: efficiency too low, same cost with worse benchmark, or quality drop too large. This makes the audit defensible to a finance person.
+- Color-coded quality drop indicator: green for improvements or no drop, yellow for 1–10 pt drop, red for 11–15 pt drop.
+
+**Algorithm Improvements (discovered while testing):**
+
+- Found a bug: Windsurf ($60, benchmark 55) was being recommended over Cursor ($60, benchmark 66) — same cost, worse quality. Fixed by adding Gate 2: if candidate costs the same as current tool AND has a lower or equal benchmark, discard it.
+- Found another bug: Gemini AI Plus ($24, efficiency 3.75) was getting Claude ($60, efficiency 1.48) as a recommendation — a more expensive, less efficient tool. Root cause: no comparison against current tool's efficiency, only candidates compared against each other. Fixed by adding Gate 1: discard any candidate whose efficiency score does not beat the current tool's efficiency score.
+- Added `discarded_efficiency` verdict to `ComparisonStep` union type to surface this in the "How we decided" section.
+- Updated `ALGORITHM.md` to document the full 3-gate algorithm with worked examples.
+
+**Cross-Category Comparisons:**
+
+- Realised chat tools (Claude, ChatGPT) were not appearing as alternatives for IDE tools (Cursor, Copilot, Windsurf) — the alternatives lists were siloed by category. Added cross-category entries and coding benchmark scores for Claude (77) and ChatGPT (43) so the engine can compare them fairly against IDE tools when the use case is coding.
+
+**Human-Readable Slugs:**
+
+- Replaced random `nanoid(8)` slugs (e.g. `x7k2p9qr`) with a readable format: `ai-audit-may-12-x7k2p9`. Fixed prefix + current date + 6-char nanoid suffix for uniqueness. No DB collision check needed.
+
+**Form State Persistence:**
+
+- Wired `localStorage` to `SpendForm.tsx`. On every `formData` change, a `useEffect` writes the state to `localStorage`. On mount, a lazy `useState` initializer reads it back. The form now survives page refreshes and tab closes.
+- Added `typeof window === "undefined"` guard so the initializer is safe during server-side rendering — `localStorage` does not exist in Node.js.
+- Form clears from `localStorage` after a successful submission so the next audit starts fresh.
+
+**Constants Refactor:**
+
+- Extracted hardcoded color class strings and the warn threshold from the results page into `src/lib/constants/auditResultPage.ts`. The `dropColor()` function now references named constants instead of magic strings.
+
+**Email Capture Backend:**
+
+- Created `src/lib/resend.ts` — Resend client singleton, same pattern as `gemini.ts`.
+- Created `src/lib/validators/lead.ts` — Zod schema validating email (required), company, role (optional), and `auditSlug` (required, comes from URL).
+- Created `src/services/lead.service.ts` — looks up the audit by slug, inserts the lead into the DB, then builds and sends a transactional HTML email via Resend. DB insert runs before the email send — if Resend fails, the lead is never lost. Email failure is non-fatal.
+- Created `POST /api/leads` — thin controller: parse JSON → Zod validate → call `saveLead()` → return `{ success: true }`.
+- Email content is conditional on `totalSavings`: subject and closing paragraph differ for high-savings (≥$500/mo) vs already-optimal cases.
+
+**CLAUDE.md Update:**
+
+- Added a singleton rule explicitly listing all current singletons (`db`, `gemini`, `resend`) and stating that `new ServiceClient(...)` must never be called outside of `lib/`.
+
+**What I learned:**
+
+- A recommendation algorithm needs a minimum of two dimensions — cost AND quality. A single-dimension optimizer always produces absurd results at the extremes. Gates applied in the right order (efficiency first, then quality) keep the output defensible.
+- `typeof window === "undefined"` is the standard Next.js pattern for detecting server-side rendering. Any browser API (`localStorage`, `window`, `document`) needs this guard in a component that can render server-side.
+- Non-fatal side effects (email, AI summary) should always run after the primary DB write, never before. If the side effect throws, the user's data should already be safe.
+
+**Blockers / what I'm stuck on:**
+
+- Resend requires a verified domain for production sending. Using `onboarding@resend.dev` for local testing for now — will set up a domain before deployment.
+- The email capture UI (frontend form on the results page) is not yet built — backend is ready but there is nothing for the user to interact with yet.
+
+**Plan for tomorrow:**
+
+- Build `LeadCaptureForm` component on the results page with conditional messaging based on savings amount.
+- Add Open Graph tags to the results page for clean social sharing previews.
+- Surface the Credex CTA prominently on high-savings results (>$500/mo).
+- Start on required assignment markdown files: README, ARCHITECTURE, REFLECTION.
+
+---

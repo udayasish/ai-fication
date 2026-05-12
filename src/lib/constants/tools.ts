@@ -11,6 +11,8 @@ export const TOOLS: Tool[] = [
     alternatives: [
       { toolId: "github_copilot", reason: "GitHub Copilot Pro is $10/seat vs Cursor Pro at $20/seat for similar AI coding features" },
       { toolId: "windsurf", reason: "Windsurf Pro is $20/seat with comparable features to Cursor Pro" },
+      { toolId: "claude", reason: "Claude Pro has a higher coding benchmark (77 vs 66) at the same $20/month — viable for teams that don't need IDE-native autocomplete" },
+      { toolId: "chatgpt", reason: "ChatGPT Plus is $20/month — an alternative for lightweight coding assistance without IDE integration" },
     ],
     plans: [
       {
@@ -45,6 +47,8 @@ export const TOOLS: Tool[] = [
     alternatives: [
       { toolId: "cursor", reason: "Cursor Pro offers more agentic AI features at $20/seat" },
       { toolId: "windsurf", reason: "Windsurf Pro offers deeper codebase context at $20/seat" },
+      { toolId: "claude", reason: "Claude Pro has a higher coding benchmark (77) at $20/month — worth considering if your team doesn't need inline completions" },
+      { toolId: "chatgpt", reason: "ChatGPT Plus is $20/month and covers basic coding assistance for lighter workloads" },
     ],
     plans: [
       {
@@ -86,6 +90,8 @@ export const TOOLS: Tool[] = [
     alternatives: [
       { toolId: "cursor", reason: "Cursor Pro is $20/seat with a larger plugin ecosystem" },
       { toolId: "github_copilot", reason: "GitHub Copilot Pro is $10/seat for teams already on GitHub" },
+      { toolId: "claude", reason: "Claude Pro has a higher coding benchmark (77 vs 55) at $20/month — worth considering for teams that primarily use AI chat for coding help" },
+      { toolId: "chatgpt", reason: "ChatGPT Plus is $20/month for teams needing lightweight AI coding assistance" },
     ],
     plans: [
       {
@@ -122,6 +128,9 @@ export const TOOLS: Tool[] = [
     alternatives: [
       { toolId: "chatgpt", reason: "ChatGPT Plus is $20/month with comparable capabilities to Claude Pro" },
       { toolId: "gemini", reason: "Gemini AI Pro is $19.99/month and includes Google Workspace integration" },
+      { toolId: "cursor", reason: "Cursor Pro is $20/seat with IDE-native autocomplete and agentic coding — better for teams that live in the editor" },
+      { toolId: "github_copilot", reason: "GitHub Copilot Pro is $10/seat — a cheaper option for teams already using GitHub" },
+      { toolId: "windsurf", reason: "Windsurf Pro is $20/seat with deep codebase context for coding-heavy workflows" },
     ],
     plans: [
       {
@@ -177,8 +186,10 @@ export const TOOLS: Tool[] = [
     vendor: "OpenAI",
     category: "chat",
     alternatives: [
-      { toolId: "claude", reason: "Claude Pro is $20/month and is often preferred for writing and analysis tasks" },
+      { toolId: "claude", reason: "Claude Pro scores higher on coding benchmarks (77 vs 43) at the same $20/month" },
       { toolId: "gemini", reason: "Gemini AI Pro is $19.99/month and integrates with Google Workspace" },
+      { toolId: "cursor", reason: "Cursor Pro is $20/seat with IDE-native autocomplete — better for teams that code directly in the editor" },
+      { toolId: "github_copilot", reason: "GitHub Copilot Pro is $10/seat — cheaper option with IDE integration for GitHub-heavy teams" },
     ],
     plans: [
       {

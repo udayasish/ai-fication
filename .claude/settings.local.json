@@ -7,7 +7,9 @@
       "Bash(node -e \"require\\('zod'\\)\")",
       "Bash(node -e \"require\\('@google/generative-ai'\\)\")",
       "Bash(npm install:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Skill(update-config)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

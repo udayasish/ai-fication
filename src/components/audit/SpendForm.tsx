@@ -1,29 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TOOLS } from "@/lib/constants/tools";
 import { USE_CASE_OPTIONS, TOOL_ROW_COLS } from "@/lib/constants/auditPage";
 import type { AuditFormData, ToolEntry } from "@/types/audit";
 import ToolInput from "@/components/audit/ToolInput";
 
+const DEFAULT_FORM_DATA: AuditFormData = {
+  teamSize: 0,
+  useCase: "",
+  tools: TOOLS.map((tool) => ({
+    toolId: tool.id,
+    planId: "",
+    monthlySpend: 0,
+    seats: 0,
+    included: false,
+    modelId: "",
+  })),
+};
+
+const LS_KEY = "auditFormData";
+
 export default function SpendForm() {
-  const [formData, setFormData] = useState<AuditFormData>({
-    teamSize: 0,
-    useCase: "",
-    tools: TOOLS.map((tool) => ({
-      toolId: tool.id,
-      planId: "",
-      monthlySpend: 0,
-      seats: 0,
-      included: false,
-      modelId: "",
-    })),
+  const [formData, setFormData] = useState<AuditFormData>(() => {
+    if (typeof window === "undefined") return DEFAULT_FORM_DATA;
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      return saved ? (JSON.parse(saved) as AuditFormData) : DEFAULT_FORM_DATA;
+    } catch {
+      return DEFAULT_FORM_DATA;
+    }
   });
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Persist form state to localStorage so it survives page refreshes
+  useEffect(() => {
+    localStorage.setItem(LS_KEY, JSON.stringify(formData));
+  }, [formData]);
 
   // Updates one tool entry in the tools array by matching toolId
   function handleToolChange(updated: ToolEntry) {
@@ -56,6 +73,7 @@ export default function SpendForm() {
       }
 
       router.push(`/audit/${data.slug}`);
+      localStorage.removeItem(LS_KEY);
     } catch {
       setSubmitError("Something went wrong. Please try again.");
     } finally {
