@@ -51,6 +51,11 @@ export default function AuditResultCard({ result: r }: Props) {
                 Score {r.currentBenchmark}/100
               </p>
             )}
+            {r.currentEfficiencyScore !== undefined && (
+              <p className="text-xs text-muted-foreground">
+                Efficiency {r.currentEfficiencyScore.toFixed(2)}
+              </p>
+            )}
           </div>
 
           {/* Arrow */}
@@ -67,6 +72,11 @@ export default function AuditResultCard({ result: r }: Props) {
             {r.recommendedBenchmark !== undefined && (
               <p className={`text-xs font-medium ${r.recommendedBenchmark >= 70 ? "text-green-500" : r.recommendedBenchmark >= 50 ? "text-yellow-500" : "text-red-400"}`}>
                 Score {r.recommendedBenchmark}/100
+              </p>
+            )}
+            {r.recommendedEfficiencyScore !== undefined && (
+              <p className="text-xs text-muted-foreground">
+                Efficiency {r.recommendedEfficiencyScore.toFixed(2)}
               </p>
             )}
           </div>
