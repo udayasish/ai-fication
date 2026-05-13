@@ -31,6 +31,22 @@ Mention the biggest saving opportunity by name. Do not use bullet points.
 Do not include generic advice — only speak to their actual results.`;
 }
 
+// ── Fallback summary builder ───────────────────────────────────────────────────
+
+// Builds a templated summary from audit data when Gemini is unavailable.
+// Returns a human-readable string using actual numbers from the audit.
+function buildFallbackSummary(formData: AuditFormValues, output: AuditOutput): string {
+  const topResult = output.results.find((r) => r.savings > 0);
+  if (!topResult || output.totalSavings === 0) {
+    return `Your team of ${formData.teamSize} is already spending efficiently on AI tools. We'll keep monitoring for new savings opportunities as plans and pricing change.`;
+  }
+  const annualSavings = (output.totalSavings * 12).toFixed(0);
+  const multiTool = output.results.filter((r) => r.savings > 0).length > 1
+    ? ` We found ${output.results.filter((r) => r.savings > 0).length} tools to optimise in total.`
+    : "";
+  return `Your team of ${formData.teamSize} could save $${output.totalSavings.toFixed(0)}/month ($${annualSavings}/year) on AI tools. The biggest opportunity is switching from ${topResult.toolName} to ${topResult.recommendedToolName}, saving $${topResult.savings.toFixed(0)}/month.${multiTool} Review the recommendations below and act on the highest-impact switch first.`;
+}
+
 // ── POST /api/audit ────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -64,8 +80,9 @@ export async function POST(req: NextRequest) {
     const result = await model.generateContent(prompt);
     summary = result.response.text().trim();
   } catch (err) {
-    // Summary generation failed — proceed without it, results are still valid
+    // Gemini failed — use templated fallback so summary is never blank
     console.error("[audit] Gemini summary failed:", err);
+    summary = buildFallbackSummary(formData, auditOutput);
   }
 
   // 5. Persist to DB

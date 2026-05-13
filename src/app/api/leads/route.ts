@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { LeadSchema } from "@/lib/validators/lead";
 import { saveLead } from "@/services/lead.service";
+import { leadsRatelimit } from "@/lib/ratelimit";
 
 export async function POST(req: NextRequest) {
-  // 1. Parse request body
+  // 1. Rate limit by IP
+  const ip = req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? "anonymous";
+  const { success } = await leadsRatelimit.limit(ip);
+  if (!success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
+  // 2. Parse request body
   let body: unknown;
   try {
     body = await req.json();
@@ -11,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // 2. Validate with Zod
+  // 3. Validate with Zod
   const parsed = LeadSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
@@ -20,7 +28,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 3. Save lead + send email
+  // 4. Save lead + send email
   try {
     await saveLead(parsed.data);
   } catch (err: unknown) {
@@ -31,6 +39,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 
-  // 4. Return success
+  // 5. Return success
   return NextResponse.json({ success: true }, { status: 201 });
 }

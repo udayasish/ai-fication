@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Spend Audit
 
-## Getting Started
+A free web app that audits your team's AI tool spend and tells you exactly where you're overpaying — like Mint, but for AI subscriptions.
 
-First, run the development server:
+Built as a 7-day internship assignment for Credex. Live at: [add deployed URL here]
+
+---
+
+## Screenshots
+
+> Add 3 screenshots here after deploying:
+> 1. Landing page
+> 2. Audit form filled in
+> 3. Results page with savings breakdown
+
+---
+
+## Quick Start
+
+### Prerequisites
+- Node.js 20+
+- A Postgres database (we use Neon)
+- API keys: Gemini, Resend, Upstash Redis
+
+### Install and run locally
+
+```bash
+git clone https://github.com/your-username/ai-fication.git
+cd ai-fication
+npm install
+```
+
+Copy the environment variables:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in `.env.local`:
+
+```
+DATABASE_URL=              # Neon Postgres connection string
+GEMINI_API_KEY=            # Google Generative AI API key
+RESEND_API_KEY=            # Resend transactional email API key
+NEXT_PUBLIC_APP_URL=       # http://localhost:3000 for local dev
+UPSTASH_REDIS_REST_URL=    # Upstash Redis REST URL
+UPSTASH_REDIS_REST_TOKEN=  # Upstash Redis REST token
+```
+
+Push the database schema:
+
+```bash
+npx drizzle-kit push
+```
+
+Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Run tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+### Deploy
 
-To learn more about Next.js, take a look at the following resources:
+Push to GitHub and import the repo on [vercel.com](https://vercel.com). Set all environment variables in the Vercel dashboard. Set `NEXT_PUBLIC_APP_URL` to your live Vercel URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Decisions
 
-## Deploy on Vercel
+**1. Hardcoded audit rules instead of LLM for pricing logic**
+Using an LLM to compare pricing would be non-deterministic, slow, and potentially wrong. The audit math is hardcoded rules against verified pricing data — fully testable, always accurate. The LLM (Gemini) is only used for the plain-English summary, where non-determinism is acceptable.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**2. Next.js App Router over a separate backend**
+The product is a form → API → results page. Next.js API routes handle the backend cleanly without a separate server. Serverless functions on Vercel match the usage pattern perfectly — no idle costs.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**3. Neon Postgres over Firebase/Supabase**
+Drizzle ORM with Neon gives full SQL control and type-safe queries without the abstraction overhead of Supabase's client SDK. The schema is simple enough that a raw SQL-adjacent layer is the right call.
+
+**4. Upstash Redis for rate limiting over in-memory or Postgres**
+Rate limiting needs per-IP counters with automatic expiry (TTL). Redis handles this natively — no cleanup jobs, no stale rows. Upstash's serverless Redis works perfectly with Vercel's edge environment.
+
+**5. Human-readable slugs over random IDs**
+Audit result URLs are meant to be shared on social media. `/audit/ai-audit-may-13-xK9mP2` is more trustworthy and shareable than `/audit/xK9mP2qR`. URL design is product design — a slug that looks like a tracking ID kills the viral loop.

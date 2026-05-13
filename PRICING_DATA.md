@@ -1,77 +1,124 @@
-# Pricing Data
+# PRICING_DATA.md
 
-All pricing used in the audit engine is sourced from official vendor pages.
-Prices are in USD per user/month unless noted otherwise.
+All pricing used in the audit engine. Every number traces to an official vendor pricing page.
+Verified: 2026-05-13.
 
 ---
 
 ## Cursor
-- Hobby: $0/month — https://cursor.com/pricing — verified 2026-05-09
-- Pro: $20/user/month — https://cursor.com/pricing — verified 2026-05-09
-- Business: $40/user/month — https://cursor.com/pricing — verified 2026-05-09
-- Enterprise: Custom pricing (contact sales) — https://cursor.com/pricing — verified 2026-05-09
+
+| Plan | Price/seat/month |
+|---|---|
+| Hobby | $0 |
+| Pro | $20 |
+| Business | $40 |
+
+Source: https://www.cursor.com/pricing — verified 2026-05-13
 
 ---
 
 ## GitHub Copilot
-- Free: $0/month (2,000 completions/month, individuals only) — https://github.com/features/copilot/plans — verified 2026-05-09
-- Pro: $10/user/month — https://github.com/features/copilot/plans — verified 2026-05-09
-- Business: $19/user/month — https://github.com/features/copilot/plans — verified 2026-05-09
-- Enterprise: $39/user/month — https://github.com/features/copilot/plans — verified 2026-05-09
+
+| Plan | Price/seat/month |
+|---|---|
+| Free | $0 |
+| Pro | $10 |
+| Business | $19 |
+| Enterprise | $39 |
+
+Source: https://github.com/features/copilot#pricing — verified 2026-05-13
 
 ---
 
-## Claude (Anthropic) — Consumer Plans
-- Free: $0/month — https://anthropic.com/pricing — verified 2026-05-09
-- Pro: $20/month — https://anthropic.com/pricing — verified 2026-05-09
-- Max (5x usage): $100/month — https://anthropic.com/pricing — verified 2026-05-09
-- Max (20x usage): $200/month — https://anthropic.com/pricing — verified 2026-05-09
-- Team Standard: $25/seat/month (monthly) / $20/seat/month (annual, min 5 seats) — https://anthropic.com/pricing — verified 2026-05-09
-- Team Premium: $125/seat/month (monthly) / $100/seat/month (annual) — https://anthropic.com/pricing — verified 2026-05-09
-- Enterprise: Custom pricing (contact sales) — https://anthropic.com/pricing — verified 2026-05-09
+## Windsurf (Codeium)
+
+| Plan | Price/seat/month |
+|---|---|
+| Free | $0 |
+| Pro | $20 |
+| Teams | $40 |
+
+Source: https://windsurf.com/pricing — verified 2026-05-13
 
 ---
 
-## Anthropic API (Direct)
-- Claude 3 Haiku: $0.25 input / $1.25 output per 1M tokens — https://docs.anthropic.com/en/docs/about-claude/pricing — verified 2026-05-09
-- Claude 3.5 Haiku: $0.80 input / $4.00 output per 1M tokens — https://docs.anthropic.com/en/docs/about-claude/pricing — verified 2026-05-09
-- Claude 3.5 Sonnet: $3.00 input / $15.00 output per 1M tokens — https://docs.anthropic.com/en/docs/about-claude/pricing — verified 2026-05-09
+## Claude (Anthropic)
+
+| Plan | Price/seat/month | Notes |
+|---|---|---|
+| Free | $0 | Limited daily messages |
+| Pro | $20 | 5× more usage than Free |
+| Max (5×) | $100 | 5× more usage than Pro |
+| Max (20×) | $200 | 20× more usage than Pro |
+| Team Standard | $25 | Min 5 seats |
+| Team Premium | $125 | Min 5 seats, includes Claude Code |
+
+Source: https://www.anthropic.com/pricing — verified 2026-05-13
 
 ---
 
-## ChatGPT (OpenAI) — Consumer Plans
-- Free: $0/month — https://openai.com/pricing — verified 2026-05-09
-- Plus: $20/month — https://openai.com/pricing — verified 2026-05-09
-- Pro: $200/month — https://openai.com/pricing — verified 2026-05-09
-- Business (formerly Team): $25/seat/month — https://openai.com/pricing — verified 2026-05-09
-- Enterprise: Custom pricing (contact sales) — https://openai.com/pricing — verified 2026-05-09
+## ChatGPT (OpenAI)
+
+| Plan | Price/seat/month |
+|---|---|
+| Free | $0 |
+| Plus | $20 |
+| Pro | $200 |
+| Business | $25 |
+
+Source: https://openai.com/chatgpt/pricing — verified 2026-05-13
 
 ---
 
-## OpenAI API (Direct)
-- GPT-4o mini: $0.15 input / $0.60 output per 1M tokens — https://openai.com/api/pricing/ — verified 2026-05-09
-- GPT-4o: $2.50 input / $10.00 output per 1M tokens — https://openai.com/api/pricing/ — verified 2026-05-09
+## Gemini (Google)
+
+| Plan | Price/seat/month |
+|---|---|
+| Free | $0 |
+| AI Plus | $7.99 |
+| AI Pro | $19.99 |
+| AI Ultra | $249.99 |
+
+Source: https://one.google.com/about/plans — verified 2026-05-13
 
 ---
 
-## Google Gemini — Consumer Plans
-- Free: $0/month — https://one.google.com/about/google-ai-plans/ — verified 2026-05-09
-- AI Plus: $7.99/month — https://one.google.com/about/google-ai-plans/ — verified 2026-05-09
-- AI Pro: $19.99/month — https://one.google.com/about/google-ai-plans/ — verified 2026-05-09
-- AI Ultra: $249.99/month — https://one.google.com/about/google-ai-plans/ — verified 2026-05-09
+## Anthropic API
+
+| Model | Input (per 1M tokens) | Output (per 1M tokens) |
+|---|---|---|
+| Claude 3 Haiku | $0.25 | $1.25 |
+| Claude 3.5 Haiku | $0.80 | $4.00 |
+| Claude 3.5 Sonnet | $3.00 | $15.00 |
+| Claude Sonnet 4.5 | $3.00 | $15.00 |
+| Claude Sonnet 4.6 | $3.00 | $15.00 |
+| Claude Opus 4 | $15.00 | $75.00 |
+
+Source: https://www.anthropic.com/pricing#api — verified 2026-05-13
 
 ---
 
-## Gemini API (Direct)
-- Gemini 1.5 Flash: $0.075 input / $0.30 output per 1M tokens — https://ai.google.dev/gemini-api/docs/pricing — verified 2026-05-09
-- Gemini 1.5 Pro: $3.50 input / $10.50 output per 1M tokens — https://ai.google.dev/gemini-api/docs/pricing — verified 2026-05-09
-- Gemini 2.5 Pro: $1.25 input / $10.00 output per 1M tokens — https://ai.google.dev/gemini-api/docs/pricing — verified 2026-05-09
+## OpenAI API
+
+| Model | Input (per 1M tokens) | Output (per 1M tokens) |
+|---|---|---|
+| GPT-4o mini | $0.15 | $0.60 |
+| GPT-4.1 mini | $0.40 | $1.60 |
+| GPT-4o | $2.50 | $10.00 |
+| GPT-4.1 | $2.00 | $8.00 |
+| o4-mini | $1.10 | $4.40 |
+
+Source: https://openai.com/api/pricing — verified 2026-05-13
 
 ---
 
-## Windsurf
-- Free: $0/month — https://windsurf.com/pricing — verified 2026-05-09
-- Pro: $20/user/month — https://windsurf.com/pricing — verified 2026-05-09
-- Teams: $40/user/month — https://windsurf.com/pricing — verified 2026-05-09
-- Max: $200/month — https://windsurf.com/pricing — verified 2026-05-09
-- Enterprise: Custom pricing (contact sales) — https://windsurf.com/pricing — verified 2026-05-09
+## Gemini API (Google)
+
+| Model | Input (per 1M tokens) | Output (per 1M tokens) |
+|---|---|---|
+| Gemini 1.5 Flash | $0.075 | $0.30 |
+| Gemini 2.0 Flash | $0.10 | $0.40 |
+| Gemini 2.5 Flash | $0.15 | $0.60 |
+| Gemini 2.5 Pro | $1.25 | $10.00 |
+
+Source: https://ai.google.dev/pricing — verified 2026-05-13

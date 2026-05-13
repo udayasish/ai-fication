@@ -2,25 +2,64 @@ import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { audits } from "@/db/schema";
-import type { AuditResult, AlternativeOption, ComparisonStep } from "@/types/audit";
-import { BENCHMARK_DROP_COLORS, BENCHMARK_DROP_WARN_THRESHOLD } from "@/lib/constants/auditResultPage";
+import type { Metadata } from "next";
+import type { AuditResult } from "@/types/audit";
+import AuditResultCard from "@/components/audit/AuditResultCard";
+import LeadCaptureForm from "@/components/audit/LeadCaptureForm";
+import ShareButtons from "@/components/audit/ShareButtons";
+import CredexCTA from "@/components/audit/CredexCTA";
+import SavingsHero from "@/components/audit/SavingsHero";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Returns a color class based on how many benchmark points are lost vs current tool.
-// Green = recommended is as good or better, yellow = small drop, red = near threshold.
-function dropColor(drop: number): string {
-  if (drop <= 0) return BENCHMARK_DROP_COLORS.good;
-  if (drop <= BENCHMARK_DROP_WARN_THRESHOLD) return BENCHMARK_DROP_COLORS.warn;
-  return BENCHMARK_DROP_COLORS.bad;
+// Generates per-audit Open Graph and Twitter card meta tags for social sharing.
+// Runs server-side before the page renders — has full DB access.
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  const audit = await db.query.audits.findFirst({
+    where: eq(audits.slug, slug),
+  });
+
+  if (!audit) return {};
+
+  const results     = audit.results as AuditResult[];
+  const title       = audit.totalSavings > 0
+    ? `AI Spend Audit — $${audit.totalSavings.toFixed(0)}/mo in savings`
+    : "AI Spend Audit — You're spending well";
+
+  const topResult   = results[0];
+  const description = topResult?.savings > 0
+    ? `${topResult.toolName} → ${topResult.recommendedToolName} saves $${topResult.savings.toFixed(0)}/mo. Total: $${audit.totalSavings.toFixed(0)}/month in savings.`
+    : "Your AI tool spend has been audited. See the full breakdown.";
+
+  const imageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/og?slug=${slug}`;
+  const pageUrl  = `${process.env.NEXT_PUBLIC_APP_URL}/audit/${slug}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url:    pageUrl,
+      type:   "website",
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card:        "summary_large_image",
+      title,
+      description,
+      images:      [imageUrl],
+    },
+  };
 }
 
 export default async function AuditResultPage({ params }: Props) {
   const { slug } = await params;
 
-  // Fetch audit row by slug
   const audit = await db.query.audits.findFirst({
     where: eq(audits.slug, slug),
   });
@@ -32,15 +71,17 @@ export default async function AuditResultPage({ params }: Props) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col gap-8">
 
-      {/* ── Header ── */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Your Audit Results</h1>
-        <p className="text-muted-foreground mt-1">
-          Projected monthly savings:{" "}
-          <span className="text-primary font-semibold">
-            ${audit.totalSavings.toFixed(0)}
-          </span>
-        </p>
+      {/* ── Savings hero ── */}
+      <SavingsHero totalSavings={audit.totalSavings} toolCount={results.length} />
+
+      {/* ── Credex CTA (high savings only) ── */}
+      <CredexCTA totalSavings={audit.totalSavings} />
+
+      {/* ── Per-tool result cards ── */}
+      <div className="flex flex-col gap-4">
+        {results.map((r) => (
+          <AuditResultCard key={r.toolId} result={r} />
+        ))}
       </div>
 
       {/* ── AI Summary ── */}
@@ -53,121 +94,12 @@ export default async function AuditResultPage({ params }: Props) {
         </div>
       )}
 
-      {/* ── Per-tool result cards ── */}
-      <div className="flex flex-col gap-4">
-        {results.map((r) => (
-          <div
-            key={r.toolId}
-            className="bg-background border border-border rounded-xl p-5 flex flex-col gap-4"
-          >
-            {/* ── Card header: tool name + savings badge ── */}
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-foreground">{r.toolName}</span>
-              {r.savings > 0 ? (
-                <span className="text-green-500 font-semibold text-sm">
-                  Save ${r.savings.toFixed(0)}/mo
-                </span>
-              ) : (
-                <span className="text-muted-foreground text-sm">Best value</span>
-              )}
-            </div>
+      {/* ── Share buttons ── */}
+      <ShareButtons totalSavings={audit.totalSavings} slug={audit.slug} />
 
-            <p className="text-sm text-muted-foreground -mt-2">{r.reason}</p>
-
-            {/* ── Side-by-side comparison ── */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-background2 rounded-lg p-4 flex flex-col gap-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Current</p>
-                <p className="text-sm font-medium text-foreground">{r.toolName}</p>
-                <p className="text-xs text-muted-foreground">{r.currentPlanName}</p>
-                <p className="text-xs text-muted-foreground">${r.currentSpend.toFixed(0)}/mo</p>
-                {r.currentBenchmark !== undefined && (
-                  <p className="text-xs text-muted-foreground">Benchmark: {r.currentBenchmark}/100</p>
-                )}
-                {r.currentEfficiencyScore !== undefined && (
-                  <p className="text-xs text-muted-foreground">Efficiency: {r.currentEfficiencyScore.toFixed(2)}</p>
-                )}
-              </div>
-
-              <div className="bg-background2 rounded-lg p-4 flex flex-col gap-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Recommended</p>
-                <p className="text-sm font-medium text-foreground">{r.recommendedToolName}</p>
-                <p className="text-xs text-muted-foreground">{r.recommendedPlanName}</p>
-                <p className="text-xs text-muted-foreground">${r.projectedSpend.toFixed(0)}/mo</p>
-                {r.recommendedBenchmark !== undefined && (
-                  <p className="text-xs text-muted-foreground">Benchmark: {r.recommendedBenchmark}/100</p>
-                )}
-                {r.recommendedEfficiencyScore !== undefined && (
-                  <p className="text-xs text-muted-foreground">Efficiency: {r.recommendedEfficiencyScore.toFixed(2)}</p>
-                )}
-              </div>
-            </div>
-
-            {/* ── Benchmark source + quality drop ── */}
-            {r.benchmarkSource && (
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Source: {r.benchmarkSource}</span>
-                {r.benchmarkDrop !== undefined && (
-                  <span className={dropColor(r.benchmarkDrop)}>
-                    Quality drop: {r.benchmarkDrop <= 0 ? "+" : "−"}{Math.abs(r.benchmarkDrop)} pts
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* ── Alternative options ── */}
-            {r.alternatives && r.alternatives.length > 0 && (
-              <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Other options</p>
-                {r.alternatives.map((alt: AlternativeOption, i: number) => (
-                  <div
-                    key={`${alt.toolName}-${alt.planName}`}
-                    className="flex items-center justify-between text-xs bg-background2 rounded-md px-3 py-2"
-                  >
-                    <span className="text-foreground font-medium">
-                      #{i + 2} {alt.toolName} — {alt.planName}
-                    </span>
-                    <div className="flex items-center gap-4 text-muted-foreground">
-                      <span>${alt.projectedSpend.toFixed(0)}/mo</span>
-                      <span>Score {alt.benchmarkScore}</span>
-                      <span>Eff {alt.efficiencyScore.toFixed(2)}</span>
-                      <span className={dropColor(alt.benchmarkDrop)}>
-                        {alt.benchmarkDrop <= 0 ? "+" : "−"}{Math.abs(alt.benchmarkDrop)} pts
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ── How we decided ── */}
-            {r.comparisonSteps && r.comparisonSteps.length > 0 && (
-              <div className="flex flex-col gap-2 pt-2 border-t border-border">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  How we decided
-                </p>
-                {r.comparisonSteps.map((step: ComparisonStep, i: number) => (
-                  <div key={i} className="flex items-start gap-2 text-xs">
-                    <span className={
-                      step.verdict === "selected"
-                        ? "text-green-500 font-bold mt-px"
-                        : "text-red-400 font-bold mt-px"
-                    }>
-                      {step.verdict === "selected" ? "✓" : "✗"}
-                    </span>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-foreground font-medium">
-                        {step.toolName} — {step.planName} · ${step.projectedSpend.toFixed(0)}/mo · Score {step.benchmarkScore}
-                      </span>
-                      <span className="text-muted-foreground">{step.reason}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-          </div>
-        ))}
+      {/* ── Lead capture ── */}
+      <div id="lead-capture">
+        <LeadCaptureForm totalSavings={audit.totalSavings} slug={audit.slug} />
       </div>
 
     </div>

@@ -52,11 +52,12 @@ export async function saveLead(data: LeadValues): Promise<void> {
 
   // 2. Insert lead into DB
   await db.insert(leads).values({
-    id:      nanoid(),
-    auditId: audit.id,
-    email:   data.email,
-    company: data.company ?? null,
-    role:    data.role ?? null,
+    id:       nanoid(),
+    auditId:  audit.id,
+    email:    data.email,
+    company:  data.company ?? null,
+    role:     data.role ?? null,
+    teamSize: data.teamSize ? String(data.teamSize) : null,
   });
 
   // 3. Build + send email (non-fatal — lead is already saved if this fails)

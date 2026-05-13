@@ -188,9 +188,15 @@ function pureCostFallback(
   useCase: string
 ): AuditResult {
   let bestSpend = currentSpend;
+  const currentPlan = tool.plans.find((p) => p.id === entry.planId);
+  const currentPlanName = currentPlan
+    ? `${currentPlan.name} · $${currentPlan.monthlyPricePerSeat}/seat`
+    : "Current plan";
+
   let best: Omit<AuditResult, "currentSpend"> = {
     toolId: tool.id,
     toolName: tool.name,
+    currentPlanName,
     recommendedToolId: tool.id,
     recommendedToolName: tool.name,
     recommendedPlanName: "Current plan",

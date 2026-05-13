@@ -19,7 +19,8 @@ savings calculations) is done with hardcoded logic in `src/services/audit.servic
 
 **When it is called:**
 After `runAudit()` succeeds, before the DB insert. If Gemini fails, the request
-still succeeds and `summary` is stored as `null`.
+still succeeds and `summary` is populated by `buildFallbackSummary()` — a templated
+string built from the actual audit numbers. The summary is never blank.
 
 **Prompt template:**
 
@@ -62,6 +63,25 @@ own message about AI cost efficiency.
 The assignment explicitly rewards knowing when NOT to use AI. Using an LLM for
 pricing comparisons would be: slower, non-deterministic, and potentially wrong.
 The hardcoded engine is faster, cheaper, fully testable, and always accurate.
+
+---
+
+## Fallback Summary — No LLM
+
+**Where used:** `src/app/api/audit/route.ts` → `buildFallbackSummary()`
+
+**Triggered when:** Gemini API fails (rate limit, network error, etc.)
+
+**What it does:**
+Generates a plain-English summary using only string interpolation from the audit
+output — no external call. Covers two cases:
+
+- **Savings found:** Names the top saving opportunity, states monthly + annual savings, mentions total tools optimised.
+- **Already optimal:** Acknowledges the team is spending efficiently.
+
+**Why a fallback and not just empty:**
+A blank summary section looks broken to the user. The fallback gives a coherent
+result even during API outages, keeping the product usable at all times.
 
 ---
 

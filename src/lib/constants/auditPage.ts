@@ -15,9 +15,6 @@ export const USE_CASE_OPTIONS = [
   { value: "coding", label: "Coding" },
   { value: "writing", label: "Writing" },
   { value: "research", label: "Research" },
-  { value: "image_generation", label: "Image Generation" },
-  { value: "video_generation", label: "Video Generation" },
   { value: "customer_support", label: "Customer Support" },
   { value: "data_analysis", label: "Data Analysis" },
-  { value: "other", label: "Other" },
 ];

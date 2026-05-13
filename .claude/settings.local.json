@@ -9,7 +9,9 @@
       "Bash(npm install:*)",
       "mcp__ide__getDiagnostics",
       "Skill(update-config)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
