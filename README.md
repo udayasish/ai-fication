@@ -8,10 +8,7 @@ Built as a 7-day internship assignment for Credex. Live at: [add deployed URL he
 
 ## Screenshots
 
-> Add 3 screenshots here after deploying:
-> 1. Landing page
-> 2. Audit form filled in
-> 3. Results page with savings breakdown
+**Demo:** [Watch 30-second walkthrough on Loom](https://www.loom.com/share/001d8058b6244684b4563b0a089e3dd1)
 
 ---
 

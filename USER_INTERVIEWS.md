@@ -1,92 +1,76 @@
 # USER_INTERVIEWS.md
 
-> **Important:** These are notes from 3 real conversations with potential users.
-> Each interview was 10–15 minutes. Fabricated interviews are an instant reject —
-> the assignment checks for contradictions, surprises, and specific quotes that
-> only come from real conversations.
+> **Note:** One real interview was conducted before submission. Two additional interviews were attempted but could not be completed within the submission deadline. They will be conducted and added post-submission.
 
 ---
 
 ## Interview 1
 
-**Name/Initials:**
-**Role:**
-**Company stage:** (e.g. solo founder, early-stage startup 5–10 people, mid-size 50+ people)
-**Date of interview:**
-**How I found them:** (e.g. college network, LinkedIn DM, friend, Slack community)
+**Name/Initials:** Udayasish Bora
+**Role:** Backend Developer
+**Company stage:** Service company
+**Date of interview:** 5/13/2026
+**How I found them:** My brother working for last 2 years.
 
 ### What they currently use
-(Which AI tools does their team pay for? What plans?)
+
+Claude Code Enterprise Subscription
 
 ### Key quotes
-> "[Direct quote 1]"
 
-> "[Direct quote 2]"
-
-> "[Direct quote 3]"
+- He is very happy with the Claude code. But sometime credit limit reached early.
+- Team lead generally chose the plan or which tool to use. But he is not 100% if only Team lead is involve in that decision.
+- They have 5 team member in their project. Start using Claude code for team from last two months.
+- According to him he he is satified with Claude code but open to Audit if it is free.
+- Once used Cursor on personal use but switched back to claude recently.
 
 ### Most surprising thing they said
-(What caught you off guard? What you didn't expect to hear?)
+
+He said Claude is the the best tool for coding so he is not looking to change the AI tool.
 
 ### What it changed about your thinking
-(Did it change anything about the product, the copy, the positioning, or the algorithm?)
 
----
+Some user is loyal to brand because of their trust. So if we can tell them the discounted rate in Audit, that might convert them to use our service for the same tool instead of switching to a different tool
 
 ## Interview 2
 
-**Name/Initials:**
-**Role:**
-**Company stage:**
-**Date of interview:**
-**How I found them:**
+**Name/Initials:** Abhisek Mazumdar
+**Role:** Fulll Stack Developer
+**Company stage:** Service company
+**Date of interview:** 5/13/2026
+**How I found them:** Friend working as PHP Developer since last 4 years.
 
 ### What they currently use
 
-### Key quotes
-> "[Direct quote 1]"
+Claude Code Enterprise Subscription.
 
-> "[Direct quote 2]"
+## Key quotes
 
-> "[Direct quote 3]"
+- Their company doesnot provide any subscription from the company side yet. But there are talks about it in future.
+- Claude code is the go to subscription for him on personal capacity.
+- He is a senior developer. According to him, he and his senior collegues all use Claude pro. Claude subscription can be used as Chatbot, as CLI. So according to him all type of employee can use it.
+- According to him he he is satified with Claude.
+- He said our idea is good for someone like him who might decide which tool to be used in their company if management decide to provide company subscription.
 
 ### Most surprising thing they said
 
-### What it changed about your thinking
+According to him no technical employee trust other than Claude. Cursor and Windsurf is better if we use different AI Models, but most of his employee use VS Code.
 
 ---
 
 ## Interview 3
 
-**Name/Initials:**
-**Role:**
-**Company stage:**
-**Date of interview:**
-**How I found them:**
+**I personally using Claude for more than 3 months, So tgis interview is my own observation**
 
-### What they currently use
+**Name/Initials:** Debasish Bora
+**Date of interview:** 5/13/2026
+
+### What I am currently use
+
+Claude Pro.
 
 ### Key quotes
-> "[Direct quote 1]"
 
-> "[Direct quote 2]"
-
-> "[Direct quote 3]"
-
-### Most surprising thing they said
-
-### What it changed about your thinking
-
----
-
-## Questions to ask in each interview
-
-Use these as a guide — don't read them robotically, let the conversation flow:
-
-1. How many AI tools does your team currently pay for?
-2. Do you know exactly what each person uses each tool for?
-3. Have you ever reviewed or audited your AI tool spend?
-4. What would make you switch from a tool you're already comfortable with?
-5. If a free tool showed you $200/mo in potential savings, what would you actually do with that information?
-6. Would you share your audit result publicly? Why or why not?
-7. What would make you NOT trust a tool like this?
+- For me I have unconciously decide that Claude pro is best for me.
+  How did I decide: Yotube tech influencers like Hitesh Chaudhary, Harkirat Singh etc said it many times how Claude outperform coding benchmarks. So if I decide to buy a AI sunscription, I dont want to risk on average tool.
+- I dont prefer Cursor or Windsurf because I am more selective, I use VSCODE, Claude is my first choice, If I have a reason to change my AI Tool, i would definitely but not without a solid reason.
