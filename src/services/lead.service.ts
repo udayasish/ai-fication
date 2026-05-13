@@ -70,7 +70,7 @@ export async function saveLead(data: LeadValues): Promise<void> {
 
   try {
     await resend.emails.send({
-      from:    "audit@yourdomain.com",
+      from:    "onboarding@resend.dev",
       to:      data.email,
       subject,
       html:    buildEmailHtml(results, audit.totalSavings, reportUrl),

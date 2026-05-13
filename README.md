@@ -89,3 +89,10 @@ Rate limiting needs per-IP counters with automatic expiry (TTL). Redis handles t
 
 **5. Human-readable slugs over random IDs**
 Audit result URLs are meant to be shared on social media. `/audit/ai-audit-may-13-xK9mP2` is more trustworthy and shareable than `/audit/xK9mP2qR`. URL design is product design — a slug that looks like a tracking ID kills the viral loop.
+
+---
+
+## Known Limitations
+
+**Transactional email (Resend)**
+Emails are sent from `onboarding@resend.dev` — Resend's shared testing address. This works without a verified domain, but Resend restricts delivery to the email address registered on the Resend account. In production, this would be replaced with a verified sender domain (e.g. `audit@credex.in`) by adding the domain's DNS records in the Resend dashboard. All leads are saved to the database regardless of whether the email send succeeds.
